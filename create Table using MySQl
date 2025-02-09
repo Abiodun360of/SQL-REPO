@@ -1,0 +1,41 @@
+Table 1 Query:
+Create Table staff_setails
+(staff_id int, 
+First_Name varchar(50), 
+Last_Name varchar(50), 
+Age int, 
+Gender varchar(50)
+)
+
+Table 2 Query:
+Create Table staff_salary 
+(staff_id int, 
+JobTitle varchar(50), 
+Salary int
+)
+
+
+
+Table 1 Insert:
+Insert into staff_details VALUES
+(1, 'Tom', 'Galvan', 40, 'Male'),
+(2, 'Pam', 'Beasley', 30, 'Female'),
+(3, 'Dwight', 'Schrute', 29, 'Male'),
+(4, 'Angela', 'Martin', 31, 'Female'),
+(5, 'Toby', 'Flenderson', 32, 'Male'),
+(6, 'Michael', 'Scott', 35, 'Male'),
+(7, 'Meredith', 'Palmer', 32, 'Female'),
+(8, 'Stanley', 'Hudson', 38, 'Male'),
+(9, 'Kevin', 'Malone', 31, 'Male')
+
+Table 2 Insert:
+Insert Into staff_salary VALUES
+(1, 'Salesman', 45000),
+(2, 'Receptionist', 36000),
+(3, 'Salesman', 63000),
+(4, 'Accountant', 47000),
+(5, 'HR', 50000),
+(6, 'Regional Manager', 65000),
+(7, 'Supplier Relations', 41000),
+(8, 'Salesman', 48000),
+(9, 'Accountant', 42000)
