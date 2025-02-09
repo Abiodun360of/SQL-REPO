@@ -88,3 +88,73 @@ FROM average_per_customer
 GROUP BY country
 ORDER BY AVG(avg_order_value);
 
+
+--8 Find the percentage of churned customers in monthly signup cohorts.
+SELECT
+  YEAR(registration_date) AS year,
+  MONTH(registration_date) AS month,
+  COUNT(customer_id) AS all_customers,
+  COUNT(CASE
+    WHEN last_order_date > DATE_SUB(CURRENT_DATE, INTERVAL 60 DAY) THEN customer_id
+  END) AS churned_customers,
+  COUNT(CASE
+    WHEN last_order_date > DATE_SUB(CURRENT_DATE, INTERVAL 60 DAY) THEN customer_id
+  END) * 100.0 / COUNT(customer_id) AS churned_percentage
+FROM customers
+GROUP BY
+  YEAR(registration_date),
+  MONTH(registration_date)
+ORDER BY
+  YEAR(registration_date),
+  MONTH(registration_date);
+
+-- 9 Find the number of "good customers" in weekly signup cohorts from the first quarter of 2023. 
+
+WITH average_total_amount AS (
+  SELECT
+    c.customer_id,
+    registration_date,
+    AVG(total_amount) AS average_total_amount
+  FROM customers c
+  JOIN orders o
+    ON c.customer_id = o.customer_id
+  WHERE registration_date >= '2023-01-01'
+    AND registration_date < '2023-04-01'
+  GROUP BY
+    c.customer_id,
+    registration_date
+)
+
+SELECT
+  YEAR(registration_date) AS year,
+  WEEK(registration_date) AS week,
+  COUNT(CASE
+    WHEN average_total_amount > 1450 THEN average_total_amount
+  END) * 100.0 / COUNT(average_total_amount) AS percent_of_good_customers
+FROM average_total_amount
+GROUP BY
+  YEAR(registration_date),
+  WEEK(registration_date)
+ORDER BY
+  YEAR(registration_date),
+  WEEK(registration_date);
+
+-- 10 the percentage of customers still active after 14 days, 30 days, and 60 days
+
+SELECT
+  WEEK(registration_date) AS week,
+  COUNT(CASE
+    WHEN DATEDIFF(last_order_date, registration_date) > 14 THEN customer_id
+  END) * 100.0 / COUNT(customer_id) AS active_after_14_days,
+  COUNT(CASE
+    WHEN DATEDIFF(last_order_date, registration_date) > 30 THEN customer_id
+  END) * 100.0 / COUNT(customer_id) AS active_after_30_days,
+  COUNT(CASE
+    WHEN DATEDIFF(last_order_date, registration_date) > 60 THEN customer_id
+  END) * 100.0 / COUNT(customer_id) AS active_after_60_days
+FROM customers
+WHERE registration_date >= '2024-07-01'
+  AND registration_date < '2024-10-01'
+GROUP BY WEEK(registration_date)
+ORDER BY WEEK(registration_date);
+
