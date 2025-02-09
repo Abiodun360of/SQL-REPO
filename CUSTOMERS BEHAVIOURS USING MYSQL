@@ -1,0 +1,68 @@
+-- 1. Show customers registered in the first six months of 2023 
+
+SELECT COUNT(customer_id) AS registration_count
+FROM customers
+WHERE registration_date >= '2023-01-01'
+AND registration_date <  '2023-07-01';
+
+-- Alternative to show customers registered in the first six months of 2023 
+SELECT COUNT(customer_id) AS registration_count
+FROM customers
+WHERE registration_date >= '2023-01-01'
+  AND registration_date <  DATE_ADD('2023-01-01', INTERVAL 6 month);
+
+
+-- 2 Find the registration count for each month in each year.
+select year(registration_date) as registration_year, month(registration_date) as registration_month, count(*) as registration_count
+from customers
+group by registration_year, registration_month
+order by registration_year
+  ;
+
+-- 3  A report showing the weekly counts of registration cohorts in 2023 based on the customer channel.
+SELECT
+  WEEK(registration_date) AS registration_week,
+  channel_name,
+  COUNT(*) AS registration_count
+FROM customers cu
+JOIN channels ch
+  ON cu.channel_id = ch.id
+WHERE registration_date >= '2023-01-01'
+  AND registration_date < '2024-01-01'
+GROUP BY
+  WEEK(registration_date),
+  channel_name
+ORDER BY WEEK(registration_date);
+
+-- 4 Find the lifetime conversion rate and  conversion rate as a percentage among customers who registered in 2023. Show the result in a column named conversion_rate. Round the result to four decimal places.
+SELECT ROUND(COUNT(first_order_id) / COUNT(*), 4) AS conversion_rate
+FROM customers
+WHERE registration_date >= '2023-01-01'
+  AND registration_date <  '2024-01-01';
+
+SELECT ROUND(COUNT(first_order_id) * 100.0 / COUNT(*), 2) AS conversion_rate
+FROM customers
+WHERE registration_date >= '2023-01-01'
+  AND registration_date <  '2024-01-01';
+
+--5 Show customers' emails and interval between their first purchase and the date of registration.
+SELECT
+  email,
+  DATEDIFF(first_order_date, registration_date) AS difference
+FROM customers;
+
+-- 6 A report of the average time to first order for weekly registration cohorts from 2023 in each registration channel
+
+SELECT
+  WEEK(registration_date) AS week,
+  ch.channel_name,
+  AVG(DATEDIFF(first_order_date, registration_date)) AS avg_days_to_first_order
+FROM customers cu
+JOIN channels ch
+  ON cu.channel_id = ch.id
+WHERE registration_date >= '2023-01-01'
+  AND registration_date < '2024-01-01'
+GROUP BY
+  WEEK(registration_date),
+  ch.channel_name
+ORDER BY WEEK(registration_date);
