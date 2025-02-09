@@ -66,3 +66,25 @@ GROUP BY
   WEEK(registration_date),
   ch.channel_name
 ORDER BY WEEK(registration_date);
+
+-- 7 Find each country's average order value per customer. 
+WITH average_per_customer AS (
+  SELECT
+    c.customer_id,
+    country,
+    AVG(total_amount) AS avg_order_value
+  FROM customers c
+  JOIN orders o
+    ON c.customer_id = o.customer_id
+  GROUP BY
+    c.customer_id,
+    country
+)
+
+SELECT
+  country,
+  AVG(avg_order_value) AS avg_order_value
+FROM average_per_customer
+GROUP BY country
+ORDER BY AVG(avg_order_value);
+
